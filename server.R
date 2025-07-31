@@ -26,8 +26,7 @@ server <- function(input, output, session) {
   # Source files for the second tab's server logic
   source("serversecond/gmms.R", local = TRUE)
   source("serversecond/plotting.R", local = TRUE)
-  source("serversecond/refiner.R", local = TRUE)
-  source("serversecond/standard_z.R", local = TRUE)
+  source("server/refiner.R", local = TRUE)
 
   # Define age ranges for consistent labeling
   age_ranges_for_labeling <- list(

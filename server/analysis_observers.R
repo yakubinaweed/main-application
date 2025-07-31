@@ -51,9 +51,7 @@ call_analysis_observer <- function(input, output, session, data_reactive, select
                                    isolated_inputs$col_age)
 
       # Run RefineR analysis
-      refiner_result <- run_refiner_analysis(filtered_data,
-                                             isolated_inputs$col_value,
-                                             isolated_inputs$nbootstrap_speed)
+      refiner_result <- run_refiner(filtered_data[[isolated_inputs$col_value]])
 
       # Extract reference intervals
       reference_intervals <- extract_intervals(refiner_result)
