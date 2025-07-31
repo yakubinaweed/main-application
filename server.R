@@ -20,7 +20,7 @@ source(file.path("server", "data_observers.R"), local = TRUE)
 source(file.path("server", "file_observers.R"), local = TRUE)
 source(file.path("server", "reactive_values.R"), local = TRUE)
 source(file.path("server", "output_renderers.R"), local = TRUE)
-source(file.path("server", "refiner.R"), local = TRUE)
+# Removed this line since the logic is now consolidated: source(file.path("server", "refiner.R"), local = TRUE)
 source(file.path("utils.R"), local = TRUE)
 
 
@@ -71,6 +71,10 @@ server <- function(input, output, session) {
   # --- Shared/Centralized Logic ---
   # Centralized message display
   render_app_message(output, message_rv)
+
+  # Initialize observers by calling the new functions from within the server function
+  initialize_data_observers(input, output, session, data_reactive, message_rv, clear_messages)
+  initialize_file_observers(input, output, session, message_rv, clear_messages, selected_dir_reactive)
 
   # Call your main analysis observer
   call_analysis_observer(input, output, session, data_reactive, selected_dir_reactive, analysis_running, message_rv)
