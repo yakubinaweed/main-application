@@ -56,17 +56,6 @@ call_analysis_observer <- function(input, output, session, data_reactive, select
       # Extract reference intervals
       reference_intervals <- extract_intervals(refiner_result)
 
-      # Z-transform data if reference intervals are available
-      z_transformed_data <- NULL
-      if (!is.null(reference_intervals) && !is.na(reference_intervals$Lower) && !is.na(reference_intervals$Upper)) {
-        z_transformed_data <- z_transform_data(
-          data_reactive(), # Use original data for z-transform based on col_value
-          isolated_inputs$col_value,
-          reference_intervals$Lower,
-          reference_intervals$Upper
-        )
-      }
-
       # Render results
       output$result_text <- renderPrint({
         if (!is.null(reference_intervals)) {
@@ -85,15 +74,12 @@ call_analysis_observer <- function(input, output, session, data_reactive, select
       output$result_plot <- renderPlot({
         if (!is.null(filtered_data) && nrow(filtered_data) > 0) {
           plot_refiner_output(
-            df = filtered_data,
-            value_col_name = isolated_inputs$col_value,
-            age_col_name = isolated_inputs$col_age,
-            gender_col_name = isolated_inputs$col_gender,
-            refiner_output = refiner_result,
-            unit = isolated_inputs$unit_input,
-            input_low = isolated_inputs$ref_low,
-            input_high = isolated_inputs$ref_high,
-            z_data = z_transformed_data # Pass z-transformed data for plotting
+            data_df = filtered_data,
+            lower_limit = reference_intervals$Lower,
+            upper_limit = reference_intervals$Upper,
+            user_lower = isolated_inputs$ref_low,
+            user_upper = isolated_inputs$ref_high,
+            unit = isolated_inputs$unit_input
           )
         } else {
           plot.new() # Clear plot area if no data
@@ -107,13 +93,11 @@ call_analysis_observer <- function(input, output, session, data_reactive, select
           plot_data = list(
             df = filtered_data,
             value_col_name = isolated_inputs$col_value,
-            age_col_name = isolated_inputs$col_age,
-            gender_col_name = isolated_inputs$col_gender,
-            refiner_output = refiner_result,
             unit = isolated_inputs$unit_input,
+            ref_low = reference_intervals$Lower,
+            ref_high = reference_intervals$Upper,
             input_low = isolated_inputs$ref_low,
-            input_high = isolated_inputs$ref_high,
-            z_data = z_transformed_data
+            input_high = isolated_inputs$ref_high
           ),
           output_dir = selected_dir_reactive(),
           file_prefix = "RefineR_Plot"
